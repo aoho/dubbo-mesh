@@ -10,6 +10,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -28,7 +29,8 @@ public class DubboClient implements Client {
     private EventLoopGroup eventExecutors;
 
     public DubboClient() {
-        this.eventExecutors = new NioEventLoopGroup(1);
+        this.eventExecutors = new EpollEventLoopGroup(1);
+//        this.eventExecutors = new NioEventLoopGroup(1);
     }
 
     public DubboClient(EventLoopGroup eventExecutors) {
