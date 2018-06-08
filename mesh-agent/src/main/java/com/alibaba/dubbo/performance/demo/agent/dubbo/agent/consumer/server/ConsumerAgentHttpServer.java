@@ -64,7 +64,7 @@ public final class ConsumerAgentHttpServer {
                     .childHandler(new ConsumerAgentHttpServerInitializer())
                     .option(EpollChannelOption.TCP_CORK, true)
                     .option(EpollChannelOption.SO_KEEPALIVE, true)
-                    .option(EpollChannelOption.SO_BACKLOG, 100)
+//                    .option(EpollChannelOption.SO_BACKLOG, 100)
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.TCP_NODELAY, true);

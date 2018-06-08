@@ -73,7 +73,7 @@ public class ConsumerAgentClient implements Client{
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
-                .option(EpollChannelOption.SO_BACKLOG, 1024)
+//                .option(EpollChannelOption.SO_BACKLOG, 1024)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

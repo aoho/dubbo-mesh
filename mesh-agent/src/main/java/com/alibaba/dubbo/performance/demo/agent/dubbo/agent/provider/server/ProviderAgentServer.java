@@ -48,8 +48,8 @@ public class ProviderAgentServer {
                     .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     .childHandler(new ProviderAgentInitializer(client))
                     .option(EpollChannelOption.TCP_CORK, true)
-                    .option(EpollChannelOption.SO_KEEPALIVE, true)
-                    .option(EpollChannelOption.SO_BACKLOG, 100)
+//                    .option(EpollChannelOption.SO_KEEPALIVE, true)
+//                    .option(EpollChannelOption.SO_BACKLOG, 100)
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.TCP_NODELAY, true);
