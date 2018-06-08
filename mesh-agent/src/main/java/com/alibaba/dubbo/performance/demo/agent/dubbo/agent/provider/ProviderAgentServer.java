@@ -11,6 +11,10 @@ import com.alibaba.dubbo.performance.demo.agent.transport.ThreadBoundClientHolde
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -27,8 +31,8 @@ public class ProviderAgentServer {
 
     private Logger logger = LoggerFactory.getLogger(ProviderAgentServer.class);
 
-    private EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-    private EventLoopGroup workerGroup = new NioEventLoopGroup(1);
+    private EventLoopGroup bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+    private EventLoopGroup workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
 
     private ServerBootstrap bootstrap;
 
@@ -46,7 +50,7 @@ public class ProviderAgentServer {
         try {
             bootstrap = new ServerBootstrap()
                     .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     .childHandler(new ProviderAgentInitializer())
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childOption(ChannelOption.TCP_NODELAY, true);
@@ -67,7 +71,7 @@ public class ProviderAgentServer {
     private void initThreadBoundClient(EventLoopGroup eventLoopGroup){
         Bootstrap b = new Bootstrap();
         b.group(eventLoopGroup.next())
-                .channel(NioSocketChannel.class)
+                .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
@@ -76,7 +80,9 @@ public class ProviderAgentServer {
                                 .addLast(new DubboRpcDecoder())
                                 .addLast(new RpcClientHandler());
                     }
-                });
+                })
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.TCP_NODELAY, true);
         ChannelFuture f = b.connect(REMOTE_HOST, REMOTE_PORT);
         ProviderAgentServer.outboundChannel = f.channel();
     }
