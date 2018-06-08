@@ -5,9 +5,13 @@ import com.alibaba.dubbo.performance.demo.agent.registry.EtcdRegistry;
 import com.alibaba.dubbo.performance.demo.agent.registry.IpHelper;
 import com.alibaba.dubbo.performance.demo.agent.transport.Client;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
@@ -38,9 +42,13 @@ public class ProviderAgentServer {
         try {
             bootstrap = new ServerBootstrap()
                     .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                     .childHandler(new ProviderAgentInitializer(client))
-                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .option(EpollChannelOption.TCP_CORK, true)
+                    .option(EpollChannelOption.SO_KEEPALIVE, true)
+                    .option(EpollChannelOption.SO_BACKLOG, 100)
+                    .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(ChannelOption.TCP_NODELAY, true);
             int port = Integer.valueOf(System.getProperty("server.port"));
             Channel channel = bootstrap.bind(IpHelper.getHostIp(), port + 50).sync().channel();
@@ -55,9 +63,6 @@ public class ProviderAgentServer {
             logger.info("provider-agent provider was closed");
         }
     }
-
-
-
 
 
 }
