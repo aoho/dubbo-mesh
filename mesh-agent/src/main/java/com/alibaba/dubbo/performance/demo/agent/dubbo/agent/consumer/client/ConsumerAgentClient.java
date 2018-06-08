@@ -9,6 +9,8 @@ import com.alibaba.dubbo.performance.demo.agent.transport.Client;
 import com.alibaba.dubbo.performance.demo.agent.transport.MeshChannel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
@@ -64,7 +66,7 @@ public class ConsumerAgentClient implements Client{
     private Channel connect(Endpoint endpoint){
         Bootstrap b = new Bootstrap();
         b.group(sharedEventLoop)//复用sharedEventLoop就发不出去请求
-                .channel(NioSocketChannel.class)
+                .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
