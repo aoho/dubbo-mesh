@@ -29,7 +29,7 @@ public class DubboClient implements Client {
     private EventLoopGroup eventExecutors;
 
     public DubboClient() {
-        this.eventExecutors = new EpollEventLoopGroup(1);
+
 //        this.eventExecutors = new NioEventLoopGroup(1);
     }
 
@@ -41,6 +41,7 @@ public class DubboClient implements Client {
 
     @Override
     public void init() {
+        this.eventExecutors = new EpollEventLoopGroup(1);
         Bootstrap b = new Bootstrap();
         b.group(eventExecutors.next())
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
