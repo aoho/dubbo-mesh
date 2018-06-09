@@ -44,7 +44,7 @@ public final class ConsumerAgentHttpServer {
     private Logger logger = LoggerFactory.getLogger(ConsumerAgentHttpServer.class);
 
     private EventLoopGroup bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-    private EventLoopGroup workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    private EventLoopGroup workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup();
 
     private ServerBootstrap bootstrap;
 
@@ -67,7 +67,7 @@ public final class ConsumerAgentHttpServer {
 //                    .option(EpollChannelOption.SO_BACKLOG, 100)
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(ChannelOption.TCP_NODELAY, true);
+                    .childOption(EpollChannelOption.TCP_NODELAY, true);
             Channel ch = bootstrap.bind(PORT).sync().channel();
             logger.info("consumer-agent provider is ready to receive request from consumer\n" +
                     "export at http://127.0.0.1:{}", PORT);

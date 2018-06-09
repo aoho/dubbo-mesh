@@ -12,6 +12,7 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -67,10 +68,10 @@ public class ConsumerAgentClient implements Client{
 
     private Channel connect(Endpoint endpoint){
         Bootstrap b = new Bootstrap();
-        b.group(sharedEventLoop)//复用sharedEventLoop就发不出去请求
+        b.group(new EpollEventLoopGroup(1))//复用sharedEventLoop就发不出去请求
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
+                .option(EpollChannelOption.SO_KEEPALIVE, true)
+                .option(EpollChannelOption.TCP_NODELAY, true)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
 //                .option(EpollChannelOption.SO_BACKLOG, 1024)

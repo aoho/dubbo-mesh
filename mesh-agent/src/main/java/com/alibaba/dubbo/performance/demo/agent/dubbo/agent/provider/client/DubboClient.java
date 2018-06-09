@@ -43,11 +43,11 @@ public class DubboClient implements Client {
     public void init() {
         this.eventExecutors = new EpollEventLoopGroup(1);
         Bootstrap b = new Bootstrap();
-        b.group(eventExecutors.next())
+        b.group(new EpollEventLoopGroup(1))
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .handler(new DubboRpcInitializer())
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
+                .option(EpollChannelOption.SO_KEEPALIVE, true)
+                .option(EpollChannelOption.TCP_NODELAY, true)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
 //                .option(EpollChannelOption.SO_BACKLOG, 1024)

@@ -52,7 +52,7 @@ public class ProviderAgentServer {
 //                    .option(EpollChannelOption.SO_BACKLOG, 100)
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(ChannelOption.TCP_NODELAY, true);
+                    .childOption(EpollChannelOption.TCP_NODELAY, true);
             int port = Integer.valueOf(System.getProperty("server.port"));
             Channel channel = bootstrap.bind(IpHelper.getHostIp(), port + 50).sync().channel();
             logger.info("provider-agent provider is ready to receive request from consumer-agent\n" +
