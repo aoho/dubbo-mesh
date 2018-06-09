@@ -23,10 +23,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class ConsumerAgentClientHandler extends SimpleChannelInboundHandler<DubboMeshProto.AgentResponse> {
 
-    private static AtomicInteger cnt = new AtomicInteger(0);
-
-    public ConsumerAgentClientHandler(){
-        logger.info("consumer-agent 出站连接数 {}", cnt.incrementAndGet());
+    public ConsumerAgentClientHandler() {
     }
 
     private Logger logger = LoggerFactory.getLogger(ConsumerAgentClientHandler.class);
@@ -38,7 +35,7 @@ public class ConsumerAgentClientHandler extends SimpleChannelInboundHandler<Dubb
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DubboMeshProto.AgentResponse msg) {
-            callback(msg);
+        callback(msg);
     }
 
     private void callback(DubboMeshProto.AgentResponse agentResponse) {
